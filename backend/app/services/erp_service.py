@@ -1,6 +1,11 @@
 from config.database import DatabaseConfig
 
 
+def safe_get_attr(row, attr, default=''):
+    """Safely get attribute from database row with default value"""
+    return getattr(row, attr, default) if hasattr(row, attr) else default
+
+
 class ERPService:
     """Service for ERP-related data access (read-only)"""
     
@@ -41,13 +46,13 @@ class ERPService:
             customers = []
             for row in rows:
                 customers.append({
-                    'id': row.id if hasattr(row, 'id') else None,
-                    'name': row.name if hasattr(row, 'name') else '',
-                    'email': row.email if hasattr(row, 'email') else '',
-                    'phone': row.phone if hasattr(row, 'phone') else '',
-                    'address': row.address if hasattr(row, 'address') else '',
-                    'city': row.city if hasattr(row, 'city') else '',
-                    'country': row.country if hasattr(row, 'country') else ''
+                    'id': safe_get_attr(row, 'id', None),
+                    'name': safe_get_attr(row, 'name'),
+                    'email': safe_get_attr(row, 'email'),
+                    'phone': safe_get_attr(row, 'phone'),
+                    'address': safe_get_attr(row, 'address'),
+                    'city': safe_get_attr(row, 'city'),
+                    'country': safe_get_attr(row, 'country')
                 })
             
             conn.close()
@@ -85,15 +90,16 @@ class ERPService:
                 conn.close()
                 return None
             
+            created_date = safe_get_attr(row, 'created_date', None)
             customer = {
-                'id': row.id if hasattr(row, 'id') else None,
-                'name': row.name if hasattr(row, 'name') else '',
-                'email': row.email if hasattr(row, 'email') else '',
-                'phone': row.phone if hasattr(row, 'phone') else '',
-                'address': row.address if hasattr(row, 'address') else '',
-                'city': row.city if hasattr(row, 'city') else '',
-                'country': row.country if hasattr(row, 'country') else '',
-                'created_date': row.created_date.isoformat() if hasattr(row, 'created_date') and row.created_date else None
+                'id': safe_get_attr(row, 'id', None),
+                'name': safe_get_attr(row, 'name'),
+                'email': safe_get_attr(row, 'email'),
+                'phone': safe_get_attr(row, 'phone'),
+                'address': safe_get_attr(row, 'address'),
+                'city': safe_get_attr(row, 'city'),
+                'country': safe_get_attr(row, 'country'),
+                'created_date': created_date.isoformat() if created_date else None
             }
             
             conn.close()
@@ -143,13 +149,17 @@ class ERPService:
             
             sales = []
             for row in rows:
+                sale_date = safe_get_attr(row, 'sale_date', None)
+                amount = safe_get_attr(row, 'amount', 0)
+                quantity = safe_get_attr(row, 'quantity', 0)
+                
                 sales.append({
-                    'id': row.id if hasattr(row, 'id') else None,
-                    'customer_id': row.customer_id if hasattr(row, 'customer_id') else None,
-                    'sale_date': row.sale_date.isoformat() if hasattr(row, 'sale_date') and row.sale_date else None,
-                    'amount': float(row.amount) if hasattr(row, 'amount') else 0,
-                    'product': row.product if hasattr(row, 'product') else '',
-                    'quantity': int(row.quantity) if hasattr(row, 'quantity') else 0
+                    'id': safe_get_attr(row, 'id', None),
+                    'customer_id': safe_get_attr(row, 'customer_id', None),
+                    'sale_date': sale_date.isoformat() if sale_date else None,
+                    'amount': float(amount) if amount else 0,
+                    'product': safe_get_attr(row, 'product'),
+                    'quantity': int(quantity) if quantity else 0
                 })
             
             conn.close()
@@ -192,11 +202,16 @@ class ERPService:
             
             summary = []
             for row in rows:
+                period = safe_get_attr(row, 'period', '')
+                transaction_count = safe_get_attr(row, 'transaction_count', 0)
+                total_amount = safe_get_attr(row, 'total_amount', 0)
+                avg_amount = safe_get_attr(row, 'avg_amount', 0)
+                
                 summary.append({
-                    'period': str(row.period) if hasattr(row, 'period') else '',
-                    'transaction_count': int(row.transaction_count) if hasattr(row, 'transaction_count') else 0,
-                    'total_amount': float(row.total_amount) if hasattr(row, 'total_amount') else 0,
-                    'avg_amount': float(row.avg_amount) if hasattr(row, 'avg_amount') else 0
+                    'period': str(period),
+                    'transaction_count': int(transaction_count) if transaction_count else 0,
+                    'total_amount': float(total_amount) if total_amount else 0,
+                    'avg_amount': float(avg_amount) if avg_amount else 0
                 })
             
             conn.close()

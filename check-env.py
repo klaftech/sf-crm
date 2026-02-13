@@ -24,13 +24,18 @@ def check_command(command, name, min_version=None):
 
 def check_python_packages():
     """Check if required Python packages can be imported"""
-    packages = ['flask', 'flask_cors', 'pyodbc', 'dotenv']
+    package_imports = {
+        'flask': 'flask',
+        'flask_cors': 'flask_cors', 
+        'pyodbc': 'pyodbc',
+        'python-dotenv': 'dotenv'
+    }
     all_installed = True
     
     print("\nChecking Python packages...")
-    for package in packages:
+    for package, import_name in package_imports.items():
         try:
-            __import__(package if package != 'dotenv' else 'dotenv')
+            __import__(import_name)
             print(f"✓ {package} is installed")
         except ImportError:
             print(f"✗ {package} is NOT installed")

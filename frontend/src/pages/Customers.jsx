@@ -107,8 +107,8 @@ function Customers() {
               </tr>
             </thead>
             <tbody>
-              {filteredCustomers.map(customer => (
-                <tr key={customer.id || Math.random()}>
+              {filteredCustomers.map((customer, index) => (
+                <tr key={customer.id || `customer-${index}`}>
                   <td>{customer.id || 'N/A'}</td>
                   <td style={{ fontWeight: '500' }}>{customer.name || 'N/A'}</td>
                   <td>{customer.email || 'N/A'}</td>
