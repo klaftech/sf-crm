@@ -52,7 +52,7 @@ class DatabaseConfig:
     """
     
     # Database Type Selection
-    DB_TYPE = os.getenv('DB_TYPE', 'sqlserver').lower()  # 'sqlserver' or 'sqlite'
+    DB_TYPE = os.getenv('DB_TYPE', 'sqlite').lower()  # 'sqlserver' or 'sqlite'
     
     # SQLite Configuration (for testing)
     SQLITE_CRM_DB_PATH = os.getenv('SQLITE_CRM_DB_PATH', 'crm_test.db')
@@ -79,6 +79,7 @@ class DatabaseConfig:
         
         Returns SQLite or SQL Server connection based on DB_TYPE setting.
         """
+        print(f"Connecting to ERP database using DB_TYPE: {DatabaseConfig.DB_TYPE}")
         if DatabaseConfig.DB_TYPE == 'sqlite':
             try:
                 connection = sqlite3.connect(DatabaseConfig.SQLITE_ERP_DB_PATH)
@@ -88,20 +89,22 @@ class DatabaseConfig:
                 print(f"Error connecting to SQLite ERP database: {e}")
                 raise
         else:
+            print("SQL Server ERP connection is currently disabled for testing. Returning None.")
+            return None
             # SQL Server connection
-            try:
-                conn_str = (
-                    f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
-                    f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
-                    f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
-                    f"UID={DatabaseConfig.ERP_DB_USERNAME};"
-                    f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
-                )
-                connection = pyodbc.connect(conn_str)
-                return connection
-            except pyodbc.Error as e:
-                print(f"Error connecting to ERP database: {e}")
-                raise
+            # try:
+            #     conn_str = (
+            #         f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
+            #         f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
+            #         f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
+            #         f"UID={DatabaseConfig.ERP_DB_USERNAME};"
+            #         f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
+            #     )
+            #     connection = pyodbc.connect(conn_str)
+            #     return connection
+            # except pyodbc.Error as e:
+            #     print(f"Error connecting to ERP database: {e}")
+            #     raise
     
     @staticmethod
     def get_crm_connection():
