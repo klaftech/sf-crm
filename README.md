@@ -1,6 +1,13 @@
 # CRM Application with ERP Integration
 
-A comprehensive CRM application built with Flask (Python) backend and React frontend, designed to integrate with Microsoft SQL Server ERP systems for customer relationship management, task tracking, KPI monitoring, and analytics.
+A comprehensive **full-stack CRM application** with:
+- **Backend**: Python Flask (REST API)
+- **Frontend**: React 18 + Vite
+- **Database**: Microsoft SQL Server
+
+Built for customer relationship management, task tracking, KPI monitoring, and analytics with ERP integration.
+
+> **Note**: This is a **hybrid stack application** - React frontend (requires Node.js for development) + Python Flask backend (NOT Node.js). See [TECH_STACK.md](TECH_STACK.md) for details.
 
 ## Features
 
@@ -13,21 +20,31 @@ A comprehensive CRM application built with Flask (Python) backend and React fron
 
 ## Technology Stack
 
-### Backend
-- Python 3.8+
-- Flask - Web framework
-- pyodbc - SQL Server database connectivity
-- Flask-CORS - Cross-origin resource sharing
+### Backend (Python - NOT Node.js)
+- **Language**: Python 3.8+
+- **Framework**: Flask 3.0 - Web framework
+- **Database**: pyodbc - SQL Server connectivity
+- **CORS**: Flask-CORS - Cross-origin resource sharing
+- **Config**: python-dotenv - Environment variables
 
-### Frontend
-- React 18
-- Vite - Build tool
-- Recharts - Data visualization
-- Axios - HTTP client
-- React Router - Navigation
+### Frontend (React - requires Node.js)
+- **Library**: React 18.2
+- **Build Tool**: Vite 5.0 - Fast build tool
+- **Charts**: Recharts - Data visualization
+- **HTTP Client**: Axios - API requests
+- **Routing**: React Router 6 - Navigation
+- **Icons**: Lucide React - UI icons
 
 ### Database
-- Microsoft SQL Server (for both ERP and CRM data)
+- **Microsoft SQL Server** (for both ERP and CRM data)
+- **ODBC Driver 17** for SQL Server
+
+### Development Tools
+- **Node.js 16+** - Required for React frontend development
+- **Python 3.8+** - Required for Flask backend
+- **Docker** - Optional, for containerized deployment
+
+> **Important**: While the frontend uses React (which requires Node.js), the backend is Python/Flask, **NOT** a Node.js server like Express. This is a hybrid stack.
 
 ## Project Structure
 
