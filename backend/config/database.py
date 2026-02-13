@@ -79,7 +79,6 @@ class DatabaseConfig:
         
         Returns SQLite or SQL Server connection based on DB_TYPE setting.
         """
-        print(f"Connecting to ERP database using DB_TYPE: {DatabaseConfig.DB_TYPE}")
         if DatabaseConfig.DB_TYPE == 'sqlite':
             try:
                 connection = sqlite3.connect(DatabaseConfig.SQLITE_ERP_DB_PATH)
