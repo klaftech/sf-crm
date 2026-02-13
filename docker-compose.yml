@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: crm-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=${FLASK_ENV:-production}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - ERP_DB_SERVER=${ERP_DB_SERVER}
+      - ERP_DB_NAME=${ERP_DB_NAME}
+      - ERP_DB_USERNAME=${ERP_DB_USERNAME}
+      - ERP_DB_PASSWORD=${ERP_DB_PASSWORD}
+      - ERP_DB_DRIVER=${ERP_DB_DRIVER:-ODBC Driver 17 for SQL Server}
+      - CRM_DB_SERVER=${CRM_DB_SERVER}
+      - CRM_DB_NAME=${CRM_DB_NAME}
+      - CRM_DB_USERNAME=${CRM_DB_USERNAME}
+      - CRM_DB_PASSWORD=${CRM_DB_PASSWORD}
+      - CRM_DB_DRIVER=${CRM_DB_DRIVER:-ODBC Driver 17 for SQL Server}
+      - API_HOST=0.0.0.0
+      - API_PORT=5000
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:3000}
+    volumes:
+      - ./backend:/app
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: crm-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+    networks:
+      - crm-network
+    restart: unless-stopped
+
+networks:
+  crm-network:
+    driver: bridge
