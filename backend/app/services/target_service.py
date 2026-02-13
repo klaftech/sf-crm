@@ -1,4 +1,4 @@
-from config.database import DatabaseConfig
+from config.database import DatabaseConfig, format_datetime
 from datetime import datetime
 
 
@@ -17,21 +17,21 @@ class TargetService:
             
             targets = []
             for row in rows:
-                progress = (float(row.current_value) / float(row.target_value) * 100) if float(row.target_value) > 0 else 0
+                progress = (float(row['current_value']) / float(row['target_value']) * 100) if float(row['target_value']) > 0 else 0
                 
                 targets.append({
-                    'id': row.id,
-                    'name': row.name,
-                    'description': row.description,
-                    'target_type': row.target_type,
-                    'target_value': float(row.target_value),
-                    'current_value': float(row.current_value),
-                    'start_date': row.start_date.isoformat() if row.start_date else None,
-                    'end_date': row.end_date.isoformat() if row.end_date else None,
-                    'status': row.status,
+                    'id': row['id'],
+                    'name': row['name'],
+                    'description': row['description'],
+                    'target_type': row['target_type'],
+                    'target_value': float(row['target_value']),
+                    'current_value': float(row['current_value']),
+                    'start_date': format_datetime(row['start_date']),
+                    'end_date': format_datetime(row['end_date']),
+                    'status': row['status'],
                     'progress_percentage': round(progress, 2),
-                    'created_at': row.created_at.isoformat() if row.created_at else None,
-                    'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                    'created_at': format_datetime(row['created_at']),
+                    'updated_at': format_datetime(row['updated_at'])
                 })
             
             conn.close()
@@ -54,21 +54,21 @@ class TargetService:
                 conn.close()
                 return None
             
-            progress = (float(row.current_value) / float(row.target_value) * 100) if float(row.target_value) > 0 else 0
+            progress = (float(row['current_value']) / float(row['target_value']) * 100) if float(row['target_value']) > 0 else 0
             
             target = {
-                'id': row.id,
-                'name': row.name,
-                'description': row.description,
-                'target_type': row.target_type,
-                'target_value': float(row.target_value),
-                'current_value': float(row.current_value),
-                'start_date': row.start_date.isoformat() if row.start_date else None,
-                'end_date': row.end_date.isoformat() if row.end_date else None,
-                'status': row.status,
+                'id': row['id'],
+                'name': row['name'],
+                'description': row['description'],
+                'target_type': row['target_type'],
+                'target_value': float(row['target_value']),
+                'current_value': float(row['current_value']),
+                'start_date': format_datetime(row['start_date']),
+                'end_date': format_datetime(row['end_date']),
+                'status': row['status'],
                 'progress_percentage': round(progress, 2),
-                'created_at': row.created_at.isoformat() if row.created_at else None,
-                'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                'created_at': format_datetime(row['created_at']),
+                'updated_at': format_datetime(row['updated_at'])
             }
             
             conn.close()

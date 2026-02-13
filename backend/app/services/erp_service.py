@@ -1,9 +1,17 @@
-from config.database import DatabaseConfig
+from config.database import DatabaseConfig, format_datetime
 
 
 def safe_get_attr(row, attr, default=''):
-    """Safely get attribute from database row with default value"""
-    return getattr(row, attr, default) if hasattr(row, attr) else default
+    """Safely get attribute from database row with default value
+    
+    Works with both attribute access and dictionary access.
+    """
+    # Try dictionary access first (works for both sqlite3.Row and pyodbc.Row)
+    try:
+        return row[attr] if row[attr] is not None else default
+    except (KeyError, TypeError):
+        # Fall back to attribute access
+        return getattr(row, attr, default) if hasattr(row, attr) else default
 
 
 class ERPService:
@@ -18,20 +26,40 @@ class ERPService:
             
             # Note: This is a sample query structure. 
             # Adjust table and column names based on actual ERP schema
-            query = """
-                SELECT TOP (?) 
-                    CustomerID as id,
-                    CustomerName as name,
-                    Email as email,
-                    Phone as phone,
-                    Address as address,
-                    City as city,
-                    Country as country
-                FROM Customers
-                WHERE 1=1
-            """
             
-            params = [limit]
+            # Check database type for SQL syntax differences
+            is_sqlite = DatabaseConfig.DB_TYPE == 'sqlite'
+            
+            if is_sqlite:
+                # SQLite syntax
+                query = """
+                    SELECT 
+                        CustomerID as id,
+                        CustomerName as name,
+                        Email as email,
+                        Phone as phone,
+                        Address as address,
+                        City as city,
+                        Country as country
+                    FROM Customers
+                    WHERE 1=1
+                """
+            else:
+                # SQL Server syntax
+                query = """
+                    SELECT TOP (?) 
+                        CustomerID as id,
+                        CustomerName as name,
+                        Email as email,
+                        Phone as phone,
+                        Address as address,
+                        City as city,
+                        Country as country
+                    FROM Customers
+                    WHERE 1=1
+                """
+            
+            params = [] if is_sqlite else [limit]
             
             if search:
                 query += " AND (CustomerName LIKE ? OR Email LIKE ?)"
@@ -39,6 +67,9 @@ class ERPService:
                 params.extend([search_param, search_param])
             
             query += " ORDER BY CustomerName"
+            
+            if is_sqlite:
+                query += f" LIMIT {limit}"
             
             cursor.execute(query, params)
             rows = cursor.fetchall()
@@ -99,7 +130,7 @@ class ERPService:
                 'address': safe_get_attr(row, 'address'),
                 'city': safe_get_attr(row, 'city'),
                 'country': safe_get_attr(row, 'country'),
-                'created_date': created_date.isoformat() if created_date else None
+                'created_date': format_datetime(created_date)
             }
             
             conn.close()
@@ -156,7 +187,7 @@ class ERPService:
                 sales.append({
                     'id': safe_get_attr(row, 'id', None),
                     'customer_id': safe_get_attr(row, 'customer_id', None),
-                    'sale_date': sale_date.isoformat() if sale_date else None,
+                    'sale_date': format_datetime(sale_date),
                     'amount': float(amount) if amount else 0,
                     'product': safe_get_attr(row, 'product'),
                     'quantity': int(quantity) if quantity else 0
@@ -175,27 +206,53 @@ class ERPService:
             conn = DatabaseConfig.get_erp_connection()
             cursor = conn.cursor()
             
-            # Aggregate sales by period
-            if period == 'daily':
-                date_format = "CAST(SaleDate AS DATE)"
-            elif period == 'monthly':
-                date_format = "FORMAT(SaleDate, 'yyyy-MM')"
-            elif period == 'yearly':
-                date_format = "YEAR(SaleDate)"
-            else:
-                date_format = "FORMAT(SaleDate, 'yyyy-MM')"
+            is_sqlite = DatabaseConfig.DB_TYPE == 'sqlite'
             
-            query = f"""
-                SELECT 
-                    {date_format} as period,
-                    COUNT(*) as transaction_count,
-                    SUM(TotalAmount) as total_amount,
-                    AVG(TotalAmount) as avg_amount
-                FROM Sales
-                WHERE SaleDate >= DATEADD(YEAR, -1, GETDATE())
-                GROUP BY {date_format}
-                ORDER BY period DESC
-            """
+            # Aggregate sales by period
+            if is_sqlite:
+                # SQLite date formatting
+                if period == 'daily':
+                    date_format = "DATE(SaleDate)"
+                elif period == 'monthly':
+                    date_format = "strftime('%Y-%m', SaleDate)"
+                elif period == 'yearly':
+                    date_format = "strftime('%Y', SaleDate)"
+                else:
+                    date_format = "strftime('%Y-%m', SaleDate)"
+                
+                query = f"""
+                    SELECT 
+                        {date_format} as period,
+                        COUNT(*) as transaction_count,
+                        SUM(TotalAmount) as total_amount,
+                        AVG(TotalAmount) as avg_amount
+                    FROM Sales
+                    WHERE SaleDate >= datetime('now', '-1 year')
+                    GROUP BY {date_format}
+                    ORDER BY period DESC
+                """
+            else:
+                # SQL Server date formatting
+                if period == 'daily':
+                    date_format = "CAST(SaleDate AS DATE)"
+                elif period == 'monthly':
+                    date_format = "FORMAT(SaleDate, 'yyyy-MM')"
+                elif period == 'yearly':
+                    date_format = "YEAR(SaleDate)"
+                else:
+                    date_format = "FORMAT(SaleDate, 'yyyy-MM')"
+                
+                query = f"""
+                    SELECT 
+                        {date_format} as period,
+                        COUNT(*) as transaction_count,
+                        SUM(TotalAmount) as total_amount,
+                        AVG(TotalAmount) as avg_amount
+                    FROM Sales
+                    WHERE SaleDate >= DATEADD(YEAR, -1, GETDATE())
+                    GROUP BY {date_format}
+                    ORDER BY period DESC
+                """
             
             cursor.execute(query)
             rows = cursor.fetchall()

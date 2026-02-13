@@ -1,4 +1,4 @@
-from config.database import DatabaseConfig
+from config.database import DatabaseConfig, format_datetime
 from datetime import datetime
 
 
@@ -17,21 +17,21 @@ class KPIService:
             
             kpis = []
             for row in rows:
-                performance = (float(row.current_value) / float(row.target_value) * 100) if float(row.target_value) > 0 else 0
+                performance = (float(row['current_value']) / float(row['target_value']) * 100) if float(row['target_value']) > 0 else 0
                 status = 'green' if performance >= 100 else ('yellow' if performance >= 80 else 'red')
                 
                 kpis.append({
-                    'id': row.id,
-                    'name': row.name,
-                    'description': row.description,
-                    'calculation_method': row.calculation_method,
-                    'target_value': float(row.target_value),
-                    'current_value': float(row.current_value),
-                    'period': row.period,
+                    'id': row['id'],
+                    'name': row['name'],
+                    'description': row['description'],
+                    'calculation_method': row['calculation_method'],
+                    'target_value': float(row['target_value']),
+                    'current_value': float(row['current_value']),
+                    'period': row['period'],
                     'performance_percentage': round(performance, 2),
                     'status': status,
-                    'created_at': row.created_at.isoformat() if row.created_at else None,
-                    'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                    'created_at': format_datetime(row['created_at']),
+                    'updated_at': format_datetime(row['updated_at'])
                 })
             
             conn.close()
@@ -54,21 +54,21 @@ class KPIService:
                 conn.close()
                 return None
             
-            performance = (float(row.current_value) / float(row.target_value) * 100) if float(row.target_value) > 0 else 0
+            performance = (float(row['current_value']) / float(row['target_value']) * 100) if float(row['target_value']) > 0 else 0
             status = 'green' if performance >= 100 else ('yellow' if performance >= 80 else 'red')
             
             kpi = {
-                'id': row.id,
-                'name': row.name,
-                'description': row.description,
-                'calculation_method': row.calculation_method,
-                'target_value': float(row.target_value),
-                'current_value': float(row.current_value),
-                'period': row.period,
+                'id': row['id'],
+                'name': row['name'],
+                'description': row['description'],
+                'calculation_method': row['calculation_method'],
+                'target_value': float(row['target_value']),
+                'current_value': float(row['current_value']),
+                'period': row['period'],
                 'performance_percentage': round(performance, 2),
                 'status': status,
-                'created_at': row.created_at.isoformat() if row.created_at else None,
-                'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                'created_at': format_datetime(row['created_at']),
+                'updated_at': format_datetime(row['updated_at'])
             }
             
             conn.close()

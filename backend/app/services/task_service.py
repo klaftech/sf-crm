@@ -1,4 +1,4 @@
-from config.database import DatabaseConfig
+from config.database import DatabaseConfig, format_datetime
 from datetime import datetime
 import pyodbc
 
@@ -32,16 +32,16 @@ class TaskService:
             tasks = []
             for row in rows:
                 tasks.append({
-                    'id': row.id,
-                    'customer_id': row.customer_id,
-                    'title': row.title,
-                    'description': row.description,
-                    'due_date': row.due_date.isoformat() if row.due_date else None,
-                    'assigned_to': row.assigned_to,
-                    'status': row.status,
-                    'priority': row.priority,
-                    'created_at': row.created_at.isoformat() if row.created_at else None,
-                    'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                    'id': row['id'],
+                    'customer_id': row['customer_id'],
+                    'title': row['title'],
+                    'description': row['description'],
+                    'due_date': format_datetime(row['due_date']),
+                    'assigned_to': row['assigned_to'],
+                    'status': row['status'],
+                    'priority': row['priority'],
+                    'created_at': format_datetime(row['created_at']),
+                    'updated_at': format_datetime(row['updated_at'])
                 })
             
             conn.close()
@@ -65,16 +65,16 @@ class TaskService:
                 return None
             
             task = {
-                'id': row.id,
-                'customer_id': row.customer_id,
-                'title': row.title,
-                'description': row.description,
-                'due_date': row.due_date.isoformat() if row.due_date else None,
-                'assigned_to': row.assigned_to,
-                'status': row.status,
-                'priority': row.priority,
-                'created_at': row.created_at.isoformat() if row.created_at else None,
-                'updated_at': row.updated_at.isoformat() if row.updated_at else None
+                'id': row['id'],
+                'customer_id': row['customer_id'],
+                'title': row['title'],
+                'description': row['description'],
+                'due_date': format_datetime(row['due_date']),
+                'assigned_to': row['assigned_to'],
+                'status': row['status'],
+                'priority': row['priority'],
+                'created_at': format_datetime(row['created_at']),
+                'updated_at': format_datetime(row['updated_at'])
             }
             
             conn.close()
