@@ -3,11 +3,13 @@
 A comprehensive **full-stack CRM application** with:
 - **Backend**: Python Flask (REST API)
 - **Frontend**: React 18 + Vite
-- **Database**: Microsoft SQL Server
+- **Database**: Microsoft SQL Server (production) / SQLite (testing)
 
 Built for customer relationship management, task tracking, KPI monitoring, and analytics with ERP integration.
 
 > **Note**: This is a **hybrid stack application** - React frontend (requires Node.js for development) + Python Flask backend (NOT Node.js). See [TECH_STACK.md](TECH_STACK.md) for details.
+
+> **Testing**: Want to test without SQL Server? Use **SQLite mode** for local development! See [SQLITE_TESTING.md](SQLITE_TESTING.md) for quick setup.
 
 ## Features
 
@@ -36,8 +38,11 @@ Built for customer relationship management, task tracking, KPI monitoring, and a
 - **Icons**: Lucide React - UI icons
 
 ### Database
-- **Microsoft SQL Server** (for both ERP and CRM data)
-- **ODBC Driver 17** for SQL Server
+- **Microsoft SQL Server** (production deployment)
+- **SQLite** (local testing - no SQL Server required!)
+- **ODBC Driver 17** for SQL Server (production only)
+
+See [SQLITE_TESTING.md](SQLITE_TESTING.md) for SQLite setup instructions.
 
 ### Development Tools
 - **Node.js 16+** - Required for React frontend development
@@ -76,6 +81,46 @@ sf-crm/
 ```
 
 ## Setup Instructions
+
+### Prerequisites
+
+- Python 3.8 or higher
+- Node.js 16 or higher
+- **For Production**: Microsoft SQL Server + ODBC Driver 17
+- **For Testing**: Nothing extra needed! SQLite is built into Python
+
+## Quick Start with SQLite (Testing)
+
+Want to try the app without setting up SQL Server? Use SQLite mode:
+
+```bash
+# 1. Setup backend
+cd backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Initialize SQLite databases
+python init_sqlite.py
+
+# 3. Configure for SQLite
+echo "DB_TYPE=sqlite" > .env
+cat .env.example >> .env
+
+# 4. Run the backend
+python app.py
+
+# 5. In another terminal, setup frontend
+cd ../frontend
+npm install
+npm run dev
+```
+
+**That's it!** The app is now running with SQLite at http://localhost:3000
+
+For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
+
+## Setup Instructions (SQL Server Production)
 
 ### Prerequisites
 
