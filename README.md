@@ -3,7 +3,7 @@
 A comprehensive **full-stack CRM application** with:
 - **Backend**: Python Flask (REST API)
 - **Frontend**: React 18 + Vite
-- **Database**: Microsoft SQL Server (production) / SQLite (testing)
+- **Database**: Microsoft SQL Server / Azure SQL Database (production) / SQLite (testing)
 
 Built for customer relationship management, task tracking, KPI monitoring, and analytics with ERP integration.
 
@@ -38,7 +38,7 @@ Built for customer relationship management, task tracking, KPI monitoring, and a
 - **Icons**: Lucide React - UI icons
 
 ### Database
-- **Microsoft SQL Server** (production deployment)
+- **Microsoft SQL Server / Azure SQL Database** (production deployment)
 - **SQLite** (local testing - no SQL Server required!)
 - **ODBC Driver 17** for SQL Server (production only)
 
@@ -86,7 +86,7 @@ sf-crm/
 
 - Python 3.8 or higher
 - Node.js 16 or higher
-- **For Production**: Microsoft SQL Server + ODBC Driver 17
+- **For Production**: Microsoft SQL Server or Azure SQL Database + ODBC Driver 17
 - **For Testing**: Nothing extra needed! SQLite is built into Python
 
 ## Quick Start with SQLite (Testing)
@@ -120,13 +120,13 @@ npm run dev
 
 For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
 
-## Setup Instructions (SQL Server Production)
+## Setup Instructions (SQL Server / Azure SQL Database Production)
 
 ### Prerequisites
 
 - Python 3.8 or higher
 - Node.js 16 or higher
-- Microsoft SQL Server (with ERP database already set up)
+- Microsoft SQL Server or Azure SQL Database (with ERP database already set up)
 - ODBC Driver 17 for SQL Server
 
 ### Backend Setup
@@ -159,13 +159,20 @@ For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
    
    Edit `.env` file with your database credentials:
    ```
-   # ERP Database (Read-Only)
+   # Set DB_TYPE to 'sqlserver' for Azure SQL Database
+   DB_TYPE=sqlserver
+   
+   # ERP Database (Read-Only) - Azure SQL Database
+   # Server format: your-server-name.database.windows.net
+   # Username format: username (NOT username@servername)
    ERP_DB_SERVER=your-erp-server.database.windows.net
    ERP_DB_NAME=erp_database
    ERP_DB_USERNAME=readonly_user
    ERP_DB_PASSWORD=your-password
    
-   # CRM Database
+   # CRM Database - Azure SQL Database
+   # Server format: your-server-name.database.windows.net
+   # Username format: username (NOT username@servername)
    CRM_DB_SERVER=your-crm-server.database.windows.net
    CRM_DB_NAME=crm_database
    CRM_DB_USERNAME=crm_user
@@ -300,9 +307,14 @@ If your ERP database has different table/column names, update the SQL queries in
 
 ### Backend Issues
 
-**Connection to SQL Server fails:**
+**Connection to SQL Server / Azure SQL Database fails:**
 - Verify ODBC Driver 17 for SQL Server is installed
 - Check server name, database name, and credentials in `.env`
+- For Azure SQL Database:
+  - Ensure your IP address is added to the Azure SQL firewall rules
+  - Use server format: `your-server-name.database.windows.net`
+  - Use username format: `username` (NOT `username@servername`)
+  - Verify the database allows SQL Server authentication (not just Azure AD)
 - Ensure SQL Server allows remote connections
 - Check firewall settings
 

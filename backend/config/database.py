@@ -47,7 +47,7 @@ def format_datetime(value):
 class DatabaseConfig:
     """Database configuration for ERP and CRM databases
     
-    Supports both SQL Server (production) and SQLite (testing).
+    Supports both SQL Server/Azure SQL Database (production) and SQLite (testing).
     Set DB_TYPE environment variable to 'sqlite' for testing or 'sqlserver' for production.
     """
     
@@ -88,22 +88,20 @@ class DatabaseConfig:
                 print(f"Error connecting to SQLite ERP database: {e}")
                 raise
         else:
-            print("SQL Server ERP connection is currently disabled for testing. Returning None.")
-            return None
             # SQL Server connection
-            # try:
-            #     conn_str = (
-            #         f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
-            #         f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
-            #         f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
-            #         f"UID={DatabaseConfig.ERP_DB_USERNAME};"
-            #         f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
-            #     )
-            #     connection = pyodbc.connect(conn_str)
-            #     return connection
-            # except pyodbc.Error as e:
-            #     print(f"Error connecting to ERP database: {e}")
-            #     raise
+            try:
+                conn_str = (
+                    f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
+                    f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
+                    f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
+                    f"UID={DatabaseConfig.ERP_DB_USERNAME};"
+                    f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
+                )
+                connection = pyodbc.connect(conn_str)
+                return connection
+            except pyodbc.Error as e:
+                print(f"Error connecting to ERP database: {e}")
+                raise
     
     @staticmethod
     def get_crm_connection():
