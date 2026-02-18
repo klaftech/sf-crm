@@ -163,7 +163,10 @@ For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
    DB_TYPE=sqlserver
    
    # ERP Database (Read-Only) - Azure SQL Database
-   # Server format: your-server-name.database.windows.net
+   # Server format options:
+   #   - your-server-name.database.windows.net
+   #   - your-server-name.database.windows.net,1433 (with port)
+   #   - tcp:your-server-name.database.windows.net,1433 (with protocol and port)
    # Username format: username (NOT username@servername)
    ERP_DB_SERVER=your-erp-server.database.windows.net
    ERP_DB_NAME=erp_database
@@ -171,7 +174,10 @@ For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
    ERP_DB_PASSWORD=your-password
    
    # CRM Database - Azure SQL Database
-   # Server format: your-server-name.database.windows.net
+   # Server format options:
+   #   - your-server-name.database.windows.net
+   #   - your-server-name.database.windows.net,1433 (with port)
+   #   - tcp:your-server-name.database.windows.net,1433 (with protocol and port)
    # Username format: username (NOT username@servername)
    CRM_DB_SERVER=your-crm-server.database.windows.net
    CRM_DB_NAME=crm_database
@@ -312,9 +318,13 @@ If your ERP database has different table/column names, update the SQL queries in
 - Check server name, database name, and credentials in `.env`
 - For Azure SQL Database:
   - Ensure your IP address is added to the Azure SQL firewall rules
-  - Use server format: `your-server-name.database.windows.net`
+  - Server format options (all supported):
+    - `your-server-name.database.windows.net` (standard)
+    - `your-server-name.database.windows.net,1433` (with port)
+    - `tcp:your-server-name.database.windows.net,1433` (with protocol and port)
   - Use username format: `username` (NOT `username@servername`)
   - Verify the database allows SQL Server authentication (not just Azure AD)
+  - Default port is 1433; only specify if using a non-standard port
 - Ensure SQL Server allows remote connections
 - Check firewall settings
 
