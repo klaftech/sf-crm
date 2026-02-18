@@ -3,7 +3,7 @@
 A comprehensive **full-stack CRM application** with:
 - **Backend**: Python Flask (REST API)
 - **Frontend**: React 18 + Vite
-- **Database**: Microsoft SQL Server (production) / SQLite (testing)
+- **Database**: Azure SQL Database (production) / SQLite (testing)
 
 Built for customer relationship management, task tracking, KPI monitoring, and analytics with ERP integration.
 
@@ -25,7 +25,7 @@ Built for customer relationship management, task tracking, KPI monitoring, and a
 ### Backend (Python - NOT Node.js)
 - **Language**: Python 3.8+
 - **Framework**: Flask 3.0 - Web framework
-- **Database**: pyodbc - SQL Server connectivity
+- **Database**: pyodbc - Azure SQL Database connectivity
 - **CORS**: Flask-CORS - Cross-origin resource sharing
 - **Config**: python-dotenv - Environment variables
 
@@ -38,8 +38,8 @@ Built for customer relationship management, task tracking, KPI monitoring, and a
 - **Icons**: Lucide React - UI icons
 
 ### Database
-- **Microsoft SQL Server** (production deployment)
-- **SQLite** (local testing - no SQL Server required!)
+- **Azure SQL Database** (production deployment)
+- **SQLite** (local testing - no database setup required!)
 - **ODBC Driver 17** for SQL Server (production only)
 
 See [SQLITE_TESTING.md](SQLITE_TESTING.md) for SQLite setup instructions.
@@ -86,7 +86,7 @@ sf-crm/
 
 - Python 3.8 or higher
 - Node.js 16 or higher
-- **For Production**: Microsoft SQL Server + ODBC Driver 17
+- **For Production**: Azure SQL Database + ODBC Driver 17
 - **For Testing**: Nothing extra needed! SQLite is built into Python
 
 ## Quick Start with SQLite (Testing)
@@ -120,13 +120,13 @@ npm run dev
 
 For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
 
-## Setup Instructions (SQL Server Production)
+## Setup Instructions (Azure SQL Database Production)
 
 ### Prerequisites
 
 - Python 3.8 or higher
 - Node.js 16 or higher
-- Microsoft SQL Server (with ERP database already set up)
+- Azure SQL Database (with ERP database already set up)
 - ODBC Driver 17 for SQL Server
 
 ### Backend Setup
@@ -159,13 +159,26 @@ For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
    
    Edit `.env` file with your database credentials:
    ```
-   # ERP Database (Read-Only)
+   # Set DB_TYPE to 'sqlserver' for Azure SQL Database
+   DB_TYPE=sqlserver
+   
+   # ERP Database (Read-Only) - Azure SQL Database
+   # Server format options:
+   #   - your-server-name.database.windows.net
+   #   - your-server-name.database.windows.net,1433 (with port)
+   #   - tcp:your-server-name.database.windows.net,1433 (with protocol and port)
+   # Username format: username (NOT username@servername)
    ERP_DB_SERVER=your-erp-server.database.windows.net
    ERP_DB_NAME=erp_database
    ERP_DB_USERNAME=readonly_user
    ERP_DB_PASSWORD=your-password
    
-   # CRM Database
+   # CRM Database - Azure SQL Database
+   # Server format options:
+   #   - your-server-name.database.windows.net
+   #   - your-server-name.database.windows.net,1433 (with port)
+   #   - tcp:your-server-name.database.windows.net,1433 (with protocol and port)
+   # Username format: username (NOT username@servername)
    CRM_DB_SERVER=your-crm-server.database.windows.net
    CRM_DB_NAME=crm_database
    CRM_DB_USERNAME=crm_user
@@ -176,12 +189,12 @@ For full documentation, see [SQLITE_TESTING.md](SQLITE_TESTING.md)
 
 5. **Set up CRM database:**
    
-   Run the `schema.sql` script on your CRM SQL Server database:
+   Run the `schema.sql` script on your Azure SQL Database:
    ```bash
-   sqlcmd -S your-crm-server -d crm_database -U crm_user -P your-password -i schema.sql
+   sqlcmd -S your-server.database.windows.net -d crm_database -U crm_user -P your-password -i schema.sql
    ```
    
-   Or execute the script using SQL Server Management Studio (SSMS).
+   Or execute the script using Azure Data Studio or SQL Server Management Studio (SSMS).
 
 6. **Run the backend server:**
    ```bash
@@ -300,11 +313,18 @@ If your ERP database has different table/column names, update the SQL queries in
 
 ### Backend Issues
 
-**Connection to SQL Server fails:**
+**Connection to Azure SQL Database fails:**
 - Verify ODBC Driver 17 for SQL Server is installed
 - Check server name, database name, and credentials in `.env`
-- Ensure SQL Server allows remote connections
-- Check firewall settings
+- Ensure your IP address is added to the Azure SQL firewall rules
+- Server format options (all supported):
+  - `your-server-name.database.windows.net` (standard)
+  - `your-server-name.database.windows.net,1433` (with port)
+  - `tcp:your-server-name.database.windows.net,1433` (with protocol and port)
+- Use username format: `username` (NOT `username@servername`)
+- Verify the database allows SQL Server authentication (not just Azure AD)
+- Default port is 1433; only specify if using a non-standard port
+- Check that the database server is accessible from your location
 
 **Module not found errors:**
 - Ensure virtual environment is activated

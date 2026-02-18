@@ -9,7 +9,7 @@ This guide will help you get the CRM application up and running quickly.
 Ensure you have:
 - Python 3.8+ installed
 - Node.js 16+ installed
-- Microsoft SQL Server with both ERP and CRM databases
+- Azure SQL Database with both ERP and CRM databases
 - ODBC Driver 17 for SQL Server installed
 
 ### Step 2: Run Setup Script
@@ -29,13 +29,13 @@ nano backend/.env
 
 ### Step 4: Create CRM Database Tables
 
-Connect to your SQL Server and run the schema:
+Connect to your Azure SQL Database and run the schema:
 
 ```bash
-sqlcmd -S your-crm-server -d crm_database -U crm_user -P password -i backend/schema.sql
+sqlcmd -S your-server.database.windows.net -d crm_database -U crm_user -P password -i backend/schema.sql
 ```
 
-Or use SQL Server Management Studio (SSMS) to execute `backend/schema.sql`.
+Or use SQL Server Management Studio (SSMS) or Azure Data Studio to execute `backend/schema.sql`.
 
 ### Step 5: Start the Application
 
@@ -115,7 +115,8 @@ You can modify or delete this sample data as needed.
 1. Verify database server is accessible
 2. Check credentials in `.env` file
 3. Ensure ODBC Driver 17 for SQL Server is installed
-4. Check firewall settings
+4. For Azure SQL Database, ensure your IP is whitelisted in the firewall rules
+5. Check firewall settings
 
 **Issue:** Module not found
 

@@ -27,7 +27,7 @@ def row_to_dict(row):
 def format_datetime(value):
     """Format datetime value to ISO format string
     
-    Handles both datetime objects (from SQL Server) and strings (from SQLite).
+    Handles both datetime objects (from Azure SQL Database) and strings (from SQLite).
     """
     if value is None:
         return None
@@ -36,7 +36,7 @@ def format_datetime(value):
     if isinstance(value, str):
         return value
     
-    # If it's a datetime object, convert to ISO format (SQL Server case)
+    # If it's a datetime object, convert to ISO format (Azure SQL Database case)
     if isinstance(value, datetime):
         return value.isoformat()
     
@@ -47,7 +47,7 @@ def format_datetime(value):
 class DatabaseConfig:
     """Database configuration for ERP and CRM databases
     
-    Supports both SQL Server (production) and SQLite (testing).
+    Supports Azure SQL Database (production) and SQLite (testing).
     Set DB_TYPE environment variable to 'sqlite' for testing or 'sqlserver' for production.
     """
     
@@ -58,7 +58,7 @@ class DatabaseConfig:
     SQLITE_CRM_DB_PATH = os.getenv('SQLITE_CRM_DB_PATH', 'crm_test.db')
     SQLITE_ERP_DB_PATH = os.getenv('SQLITE_ERP_DB_PATH', 'erp_test.db')
     
-    # SQL Server Configuration (for production)
+    # Azure SQL Database Configuration (for production)
     # ERP Database (Read-Only)
     ERP_DB_SERVER = os.getenv('ERP_DB_SERVER', '')
     ERP_DB_NAME = os.getenv('ERP_DB_NAME', '')
@@ -77,7 +77,7 @@ class DatabaseConfig:
     def get_erp_connection():
         """Get connection to ERP database (read-only)
         
-        Returns SQLite or SQL Server connection based on DB_TYPE setting.
+        Returns SQLite or Azure SQL Database connection based on DB_TYPE setting.
         """
         if DatabaseConfig.DB_TYPE == 'sqlite':
             try:
@@ -88,28 +88,26 @@ class DatabaseConfig:
                 print(f"Error connecting to SQLite ERP database: {e}")
                 raise
         else:
-            print("SQL Server ERP connection is currently disabled for testing. Returning None.")
-            return None
-            # SQL Server connection
-            # try:
-            #     conn_str = (
-            #         f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
-            #         f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
-            #         f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
-            #         f"UID={DatabaseConfig.ERP_DB_USERNAME};"
-            #         f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
-            #     )
-            #     connection = pyodbc.connect(conn_str)
-            #     return connection
-            # except pyodbc.Error as e:
-            #     print(f"Error connecting to ERP database: {e}")
-            #     raise
+            # Azure SQL Database connection
+            try:
+                conn_str = (
+                    f"DRIVER={{{DatabaseConfig.ERP_DB_DRIVER}}};"
+                    f"SERVER={DatabaseConfig.ERP_DB_SERVER};"
+                    f"DATABASE={DatabaseConfig.ERP_DB_NAME};"
+                    f"UID={DatabaseConfig.ERP_DB_USERNAME};"
+                    f"PWD={DatabaseConfig.ERP_DB_PASSWORD};"
+                )
+                connection = pyodbc.connect(conn_str)
+                return connection
+            except pyodbc.Error as e:
+                print(f"Error connecting to ERP database: {e}")
+                raise
     
     @staticmethod
     def get_crm_connection():
         """Get connection to CRM database
         
-        Returns SQLite or SQL Server connection based on DB_TYPE setting.
+        Returns SQLite or Azure SQL Database connection based on DB_TYPE setting.
         """
         if DatabaseConfig.DB_TYPE == 'sqlite':
             try:
@@ -120,7 +118,7 @@ class DatabaseConfig:
                 print(f"Error connecting to SQLite CRM database: {e}")
                 raise
         else:
-            # SQL Server connection
+            # Azure SQL Database connection
             try:
                 conn_str = (
                     f"DRIVER={{{DatabaseConfig.CRM_DB_DRIVER}}};"
