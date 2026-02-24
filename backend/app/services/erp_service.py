@@ -6,7 +6,7 @@ def safe_get_attr(row, attr, default=''):
     
     Works with both attribute access and dictionary access.
     """
-    # Try dictionary access first (works for both sqlite3.Row and pyodbc.Row)
+    # Try dictionary access first (works for both sqlite3.Row and pymysql.DictCursor)
     try:
         return row[attr] if row[attr] is not None else default
     except (KeyError, TypeError):
@@ -23,7 +23,8 @@ class ERPService:
         try:
             conn = DatabaseConfig.get_erp_connection()
             cursor = conn.cursor()
-            
+            print(f"Connected to ERP database: {DatabaseConfig.ERP_DB_SERVER}:{DatabaseConfig.ERP_DB_PORT}/{DatabaseConfig.ERP_DB_NAME}")
+
             # Note: This is a sample query structure. 
             # Adjust table and column names based on actual ERP schema
             
@@ -46,7 +47,7 @@ class ERPService:
                 """
             else:
                 # SQL Server syntax
-                query = """
+                query2 = """
                     SELECT TOP (?) 
                         CustomerID as id,
                         CustomerName as name,
@@ -58,6 +59,34 @@ class ERPService:
                     FROM Customers
                     WHERE 1=1
                 """
+                query = """
+                    SELECT TOP (10) [CustomerId]
+                        ,[CustomerName]
+                        ,[Email]
+                        ,[Phone]
+                        ,[Address]
+                        ,[City]
+                        ,[State]
+                        ,[ZipCode]
+                        ,[IsDeleted]
+                        ,[CreatedBy]
+                        ,[CreatedOn]
+                        ,[UpdatedBy]
+                        ,[UpdatedOn]
+                        ,[CustomerNumber]
+                        ,[WebAccess]
+                        ,[DefaultCCId]
+                        ,[PaytraceId]
+                        ,[CustomerSearchWord]
+                        ,[PONumberRequired]
+                        ,[IsTaxExempt]
+                        ,[IsSubscribed]
+                        ,[TermsOfPaymentId]
+                        ,[InsideRepSalesRepId]
+                        ,[OutsideRepSalesRepId]
+                        ,[AbasID]
+                    FROM [dbo].[Customers]
+                """
             
             params = [] if is_sqlite else [limit]
             
@@ -66,13 +95,14 @@ class ERPService:
                 search_param = f"%{search}%"
                 params.extend([search_param, search_param])
             
-            query += " ORDER BY CustomerName"
+            #query += " ORDER BY CustomerName"
             
             if is_sqlite:
                 query += f" LIMIT {limit}"
             
             cursor.execute(query, params)
             rows = cursor.fetchall()
+            print(f"Fetched {len(rows)} customers from ERP database")
             
             customers = []
             for row in rows:

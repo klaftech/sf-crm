@@ -1,6 +1,5 @@
 from config.database import DatabaseConfig, format_datetime
 from datetime import datetime
-import pyodbc
 
 
 class TaskService:

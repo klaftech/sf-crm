@@ -27,7 +27,7 @@ def check_python_packages():
     package_imports = {
         'flask': 'flask',
         'flask_cors': 'flask_cors', 
-        'pyodbc': 'pyodbc',
+        'pymysql': 'pymysql',
         'python-dotenv': 'dotenv'
     }
     all_installed = True
